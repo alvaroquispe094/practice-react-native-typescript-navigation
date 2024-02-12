@@ -1,4 +1,4 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+/*import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { HomeStackParamList, HomeStackRoutes } from '../routes';
 import { useCallback } from 'react';
 import { Product } from '../domain';
@@ -17,3 +17,4 @@ export const useNavigateToProduct = (): ((product: Product) => void) => {
     [navigation],
   );
 };
+*/

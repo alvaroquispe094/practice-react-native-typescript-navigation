@@ -1,169 +1,103 @@
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FunctionComponent, PropsWithChildren } from 'react';
 import {
-  Animated,
-  FlatList,
-  ListRenderItem,
   SafeAreaView,
-  StyleProp,
+  ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
-  TextInput,
-  TextStyle,
   View,
-  ViewStyle,
+  useColorScheme,
 } from 'react-native';
-import { Button, ProductCard } from '../../components';
-import { extractKeyFromEntity, Product } from '../../domain';
 import {
-  useFilteredProducts,
-  useNavigateToProduct,
-  useProductIndex,
-  useProducts,
-} from '../../hooks';
-import { v4 as uuid } from 'uuid';
+  Colors,
+  Header,
+  ReloadInstructions,
+  DebugInstructions,
+  LearnMoreLinks,
+} from 'react-native/Libraries/NewAppScreen';
 
 export const HomeScreen: FunctionComponent = () => {
-  const { products, createProduct, deleteProduct } = useProducts();
-  const [search, setSearch] = useState('');
-  const navigateToProduct = useNavigateToProduct();
-  const { current: translateY } = useRef(new Animated.Value(0));
-  const [deleting, setDeleting] = useState<string | undefined>(undefined);
+  const isDarkMode = useColorScheme() === 'dark';
 
-  const productIndex = useProductIndex(products);
-  const filteredProducts = useFilteredProducts(productIndex, products, search);
-
-  const deletingIndex = useMemo(
-    () => (deleting ? filteredProducts.findIndex(p => p.id === deleting) : undefined),
-    [deleting, filteredProducts],
-  );
-
-  const animateDeleteProduct = useCallback((id: string) => {
-    setDeleting(id);
-  }, []);
-
-  const renderProduct: ListRenderItem<Product> = useCallback(
-    ({ item, index }) => (
-      <ProductCard
-        onPressName={navigateToProduct.bind(null, item)}
-        product={item}
-        style={styles.productCard}
-        onDelete={animateDeleteProduct}
-        translateY={deletingIndex != null && index >= deletingIndex ? translateY : undefined}
-        translateShrinks={deletingIndex === index}
-      />
-    ),
-    [animateDeleteProduct, deletingIndex, navigateToProduct, translateY],
-  );
-
-  const emptyAction = useCallback(() => {
-    createProduct({ name: search, description: '', id: uuid() });
-  }, [createProduct, search]);
-
-  useEffect(() => {
-    if (deleting) {
-      const id = deleting;
-      setTimeout(() => {
-        Animated.timing(translateY, {
-          toValue: 1,
-          useNativeDriver: true,
-          duration: 250,
-        }).start(() => {
-          deleteProduct(id);
-          setDeleting(undefined);
-        });
-      }, 0);
-
-      return () => translateY.setValue(0);
-    }
-  }, [deleteProduct, deleting, translateY]);
-
-  const screenStyles: StyleProp<ViewStyle> = [styles.screen];
-  const productListStyles: StyleProp<ViewStyle> = [styles.productList];
-
-  if (!filteredProducts.length) {
-    screenStyles.push(styles.screenEmpty);
-    productListStyles.push(styles.productListEmpty);
-  }
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
 
   return (
-    <SafeAreaView style={screenStyles}>
-      <View style={styles.header}>
-        <TextInput
-          style={styles.search}
-          value={search}
-          onChangeText={setSearch}
-          placeholder="Search"
-        />
-      </View>
-      <FlatList<Product>
-        renderItem={renderProduct}
-        contentContainerStyle={productListStyles}
-        data={filteredProducts}
-        keyExtractor={extractKeyFromEntity}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyLabel}>
-              No product named <Text style={styles.emptyTerm}>{search}</Text> found
-            </Text>
-            <Button onPress={emptyAction} style={styles.emptyButton} fontSize={18}>
-              Create it
-            </Button>
-          </View>
-        }
+    <SafeAreaView style={backgroundStyle}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={backgroundStyle.backgroundColor}
       />
+      <ScrollView contentInsetAdjustmentBehavior="automatic" style={backgroundStyle}>
+        <Header />
+        <View
+          style={{
+            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          }}>
+          <Section title="Step One">
+            Edit <Text style={styles.highlight}>App.tsx</Text> to change this screen and then come
+            back to see your edits.
+          </Section>
+          <Section title="See Your Changes">
+            <ReloadInstructions />
+          </Section>
+          <Section title="Debug">
+            <DebugInstructions />
+          </Section>
+          <Section title="Learn More">Read the docs to discover what to do next:</Section>
+          <LearnMoreLinks />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create<{
-  screen: ViewStyle;
-  screenEmpty: ViewStyle;
-  productCard: ViewStyle;
-  productList: ViewStyle;
-  productListEmpty: ViewStyle;
-  header: ViewStyle;
-  search: TextStyle;
-  emptyContainer: ViewStyle;
-  emptyLabel: TextStyle;
-  emptyTerm: TextStyle;
-  emptyButton: ViewStyle;
-}>({
-  screen: { backgroundColor: '#EEE', flex: 1 },
-  screenEmpty: { backgroundColor: '#FFF' },
-  productCard: { margin: 10 },
-  productList: { paddingBottom: 100 },
-  productListEmpty: {
-    paddingBottom: 0,
+type SectionProps = PropsWithChildren<{
+  title: string;
+}>;
+
+function Section({ children, title }: SectionProps): React.JSX.Element {
+  const isDarkMode = useColorScheme() === 'dark';
+  return (
+    <View style={styles.sectionContainer}>
+      <Text
+        style={[
+          styles.sectionTitle,
+          {
+            color: isDarkMode ? Colors.white : Colors.black,
+          },
+        ]}>
+        {title}
+      </Text>
+      <Text
+        style={[
+          styles.sectionDescription,
+          {
+            color: isDarkMode ? Colors.light : Colors.dark,
+          },
+        ]}>
+        {children}
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  sectionContainer: {
+    marginTop: 32,
+    paddingHorizontal: 24,
   },
-  header: {
-    backgroundColor: '#FFF',
-    borderBottomColor: '#EEE',
-    borderBottomWidth: 1,
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: '600',
   },
-  search: {
-    backgroundColor: '#EFEFEF',
-    borderRadius: 20,
-    width: '90%',
-    marginVertical: 10,
-    marginHorizontal: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 6,
-  },
-  emptyContainer: {
-    backgroundColor: '#FFF',
-    flex: 1,
-    alignItems: 'center',
-    paddingTop: '50%',
-  },
-  emptyLabel: {
-    color: '#000',
+  sectionDescription: {
+    marginTop: 8,
     fontSize: 18,
+    fontWeight: '400',
   },
-  emptyTerm: {
-    fontWeight: 'bold',
-  },
-  emptyButton: {
-    marginTop: 20,
+  highlight: {
+    fontWeight: '700',
   },
 });

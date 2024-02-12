@@ -1,4 +1,4 @@
-import { v4 as uuid } from 'uuid';
+/*import { v4 as uuid } from 'uuid';
 import { faker } from '@faker-js/faker';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { NativeModules } from 'react-native';
@@ -50,3 +50,4 @@ export const useProducts = (): ProductsApi => {
     [createProduct, deleteProduct, state],
   );
 };
+*/

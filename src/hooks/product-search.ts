@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+/*import { useMemo } from 'react';
 import { Product } from '../domain';
 
 export type ProductIndex = Map<string, string[]>;
@@ -26,3 +26,4 @@ export const useFilteredProducts = (
     return indexed.some(searchTerm => searchTerm.includes(searchingFor));
   });
 };
+*/
