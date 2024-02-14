@@ -6,6 +6,7 @@ import { SettingsScreen } from '../screens';
 import { TabParamList, TabRoutes } from '../routes';
 import { HomeTabNavigator } from './HomeTabNavigator';
 import { Text } from 'react-native';
+import { PaymentScreen } from '../screens/tabs/PaymentScreen';
 
 const Navigator = createBottomTabNavigator<TabParamList>();
 
@@ -21,6 +22,9 @@ export const TabNavigator: FunctionComponent = () => {
             case TabRoutes.Home:
               label = 'Home';
               break;
+            case TabRoutes.Payment:
+              label = 'Payment';
+              break;
             case TabRoutes.Settings:
               label = 'Settings';
               break;
@@ -33,6 +37,8 @@ export const TabNavigator: FunctionComponent = () => {
 
           if (route.name === TabRoutes.Home) {
             iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === TabRoutes.Payment) {
+            iconName = focused ? 'card' : 'card-outline';
           } else if (route.name === TabRoutes.Settings) {
             iconName = focused ? 'settings' : 'settings-outline';
           }
@@ -41,6 +47,7 @@ export const TabNavigator: FunctionComponent = () => {
         },
       })}>
       <Navigator.Screen name={TabRoutes.Home} component={HomeTabNavigator} />
+      <Navigator.Screen name={TabRoutes.Payment} component={PaymentScreen} />
       <Navigator.Screen name={TabRoutes.Settings} component={SettingsScreen} />
     </Navigator.Navigator>
   );

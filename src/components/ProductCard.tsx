@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useRef, useState } from 'react';
+/*import React, { FunctionComponent, useCallback, useRef, useState } from 'react';
 import {
   Text,
   StyleSheet,
@@ -121,3 +121,4 @@ const styles = StyleSheet.create<{
     marginTop: 10,
   },
 });
+*/
